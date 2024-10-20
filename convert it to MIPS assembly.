@@ -1,0 +1,37 @@
+#include <stdio.h>
+
+int main() {
+    int x = 4;
+    int y = 7;
+    int product = x * y;
+
+    printf("Product: %d\n", product);
+    return 0;
+}
+
+        .data                   # Section for data
+msg:    .asciiz "Product: "      # Message to print the result
+
+        .text                   # Section for code
+        .globl main
+
+main:
+        # Load constants into registers
+        li      $t0, 4          # Load 4 into register $t0 (x)
+        li      $t1, 7          # Load 7 into register $t1 (y)
+
+        # Perform the multiplication
+        mul     $t2, $t0, $t1   # Multiply $t0 (x) and $t1 (y), store in $t2 (product)
+
+        # Print the result
+        li      $v0, 4          # System call for printing string
+        la      $a0, msg        # Load address of the message
+        syscall                 # Make the system call
+
+        li      $v0, 1          # System call for printing an integer
+        move    $a0, $t2        # Move the product (in $t2) to $a0 for printing
+        syscall                 # Make the system call
+
+        # Exit the program
+        li      $v0, 10         # System call to exit the program
+        syscall
