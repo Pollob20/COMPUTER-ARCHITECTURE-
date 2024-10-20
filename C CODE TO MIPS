@@ -2,3 +2,54 @@ Let’s start with a simple C program and then convert it into MIPS assembly.
 
 Simple C Program
 Here’s a simple C program that adds two numbers:
+#include <stdio.h>
+
+int main() {
+    int a = 5;
+    int b = 3;
+    int sum = a + b;
+
+    printf("Sum: %d\n", sum);
+    return 0;
+}
+
+MIPS Assembly Code
+Here’s the MIPS assembly equivalent of the above C code:
+
+assembly
+Copy code
+        .data                   # Section for data
+msg:    .asciiz "Sum: "          # Message to print the result
+
+        .text                   # Section for code
+        .globl main
+
+main:
+        # Load constants into registers
+        li      $t0, 5          # Load 5 into register $t0 (a)
+        li      $t1, 3          # Load 3 into register $t1 (b)
+
+        # Perform the addition
+        add     $t2, $t0, $t1   # Add $t0 (a) and $t1 (b), store in $t2 (sum)
+
+        # Print the result
+        li      $v0, 4          # System call for printing string
+        la      $a0, msg        # Load address of the message
+        syscall                 # Make the system call
+
+        li      $v0, 1          # System call for printing an integer
+        move    $a0, $t2        # Move the sum (in $t2) to $a0 for printing
+        syscall                 # Make the system call
+
+        # Exit the program
+        li      $v0, 10         # System call to exit the program
+        syscall
+Explanation of MIPS Code:
+li: Loads an immediate value (constant) into a register.
+li $t0, 5 loads the value 5 into register $t0.
+add: Adds two registers and stores the result in a third register.
+add $t2, $t0, $t1 adds the values in $t0 and $t1 and stores the result in $t2.
+syscall: Makes a system call to the MIPS runtime for input/output operations.
+li $v0, 4 sets the system call code for printing a string.
+li $v0, 1 sets the system call code for printing an integer.
+li $v0, 10 is the system call code to exit the program.
