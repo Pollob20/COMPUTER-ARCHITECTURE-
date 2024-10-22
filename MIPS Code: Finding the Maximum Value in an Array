@@ -1,0 +1,47 @@
+.data                           # Data segment
+    array:  .word 7, 12, 5, 3, 18, 9   # Array of integers
+    length: .word 6                   # Length of the array
+    max_value: .word 0                # To store the maximum value
+
+.text                           # Code segment
+    .globl main
+main:
+    # Load the array length into $t0
+    lw $t0, length               # $t0 = length of the array
+
+    # Load the address of the array into $t1
+    la $t1, array                # $t1 = address of the first element of the array
+
+    # Initialize the max value with the first element of the array
+    lw $t2, 0($t1)               # $t2 = array[0], max_value
+    sw $t2, max_value            # Store the first element as the initial max value
+
+    # Initialize the loop counter
+    li $t3, 1                    # $t3 = loop counter, starting from index 1
+
+loop:
+    # Check if we've reached the end of the array
+    beq $t3, $t0, end_loop       # If $t3 == length, exit the loop
+
+    # Load the next element of the array
+    lw $t4, 0($t1)               # $t4 = array[$t3]
+
+    # Compare the current element with the max value
+    lw $t5, max_value            # Load current max value
+    blt $t4, $t5, skip           # If array[$t3] < max_value, skip update
+
+    # Update max value if array[$t3] is greater
+    sw $t4, max_value            # Store new max value
+
+skip:
+    # Increment the array pointer and loop counter
+    addi $t1, $t1, 4             # Move to the next element (word = 4 bytes)
+    addi $t3, $t3, 1             # Increment loop counter
+
+    # Loop back
+    j loop
+
+end_loop:
+    # Exit the program
+    li $v0, 10                   # Load 10 into $v0 (syscall to exit)
+    syscall                      # Make the syscall to exit
