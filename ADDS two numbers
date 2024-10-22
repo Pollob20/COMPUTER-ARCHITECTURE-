@@ -1,0 +1,17 @@
+    .data                   # Data segment
+num1:   .word 5             # First number
+num2:   .word 10            # Second number
+result: .word 0             # Variable to store result
+
+    .text                   # Code segment
+    .globl main
+main:
+    lw $t0, num1            # Load first number into $t0
+    lw $t1, num2            # Load second number into $t1
+
+    add $t2, $t0, $t1       # Add $t0 and $t1, store result in $t2
+
+    sw $t2, result          # Store the result in memory (result)
+
+    li $v0, 10              # Exit system call
+    syscall                 # Make the system call
