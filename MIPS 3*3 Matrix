@@ -1,0 +1,77 @@
+# MIPS Assembly code for multiplying two 3x3 matrices
+# This code multiplies two matrices manually, 
+# with less optimization to make it more understandable
+
+    .data
+matrix1:    .word 1, 2, 3, 4, 5, 6, 7, 8, 9   
+matrix2:    .word 9, 8, 7, 6, 5, 4, 3, 2, 1   
+result:     .space 36                         
+
+newline:    .asciiz "\n"                      
+
+    .text
+    .globl main
+
+main:
+    
+    la $t0, matrix1          
+    la $t1, matrix2          
+    la $t2, result           
+
+    
+    li $t3, 0               
+    
+row_loop: 
+    li $t4, 0                
+
+column_loop:
+    
+    li $t5, 0                
+
+    
+    li $t6, 0                
+
+element_loop:
+    
+    mul $t7, $t3, 12         
+    add $t7, $t7, $t6        
+    sll $t7, $t7, 2          
+    add $t7, $t0, $t7        
+
+    
+    mul $t8, $t6, 12         
+    add $t8, $t8, $t4        
+    sll $t8, $t8, 2          
+    add $t8, $t1, $t8        
+
+    
+    lw $t9, 0($t7)           
+    lw $t10, 0($t8)          
+
+    
+    mul $t11, $t9, $t10      
+    add $t5, $t5, $t11       
+
+    
+    addi $t6, $t6, 1
+    li $t12, 3               
+    bne $t6, $t12, element_loop 
+
+    
+    
+    mul $t7, $t3, 12         
+    add $t7, $t7, $t4        
+    sll $t7, $t7, 2          
+    add $t7, $t2, $t7        
+    sw $t5, 0($t7)           
+
+    
+    addi $t4, $t4, 1
+    bne $t4, $t12, column_loop 
+
+    
+    addi $t3, $t3, 1
+    bne $t3, $t12, row_loop   
+    
+    li $v0, 10               
+    syscall
