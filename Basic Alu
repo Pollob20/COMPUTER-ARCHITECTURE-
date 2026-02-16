@@ -1,0 +1,16 @@
+.data
+num1: .word 10
+num2: .word 20
+result: .word 0
+
+.text
+.globl main
+
+main:
+    lw $t0, num1      # load num1 into $t0
+    lw $t1, num2      # load num2 into $t1
+    add $t2, $t0, $t1 # $t2 = $t0 + $t1
+    sw $t2, result    # store result
+
+    li $v0, 10
+    syscall
