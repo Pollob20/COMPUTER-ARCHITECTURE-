@@ -1,0 +1,23 @@
+#include <stdio.h>
+
+#define CACHE_SIZE 8
+
+int cache[CACHE_SIZE];
+
+int access_memory(int address) {
+    int index = address % CACHE_SIZE;
+    if(cache[index] == address) {
+        printf("Cache Hit\n");
+        return 1;
+    } else {
+        printf("Cache Miss\n");
+        cache[index] = address;
+        return 0;
+    }
+}
+
+int main() {
+    access_memory(5);
+    access_memory(13);
+    access_memory(5);
+}
