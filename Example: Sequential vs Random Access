@@ -1,0 +1,26 @@
+.data
+array: .word 1,2,3,4,5,6,7,8,9,10
+size:  .word 10
+sum:   .word 0
+
+.text
+.globl main
+
+main:
+    la $t0, array      # base address
+    lw $t1, size       # size
+    li $t2, 0          # i = 0
+    li $t3, 0          # sum = 0
+
+loop:
+    sll $t4, $t2, 2    # offset = i*4
+    add $t5, $t0, $t4  # address = base + offset
+    lw $t6, 0($t5)     # load array[i]
+    add $t3, $t3, $t6  # sum += value
+    addi $t2, $t2, 1   # i++
+    blt $t2, $t1, loop
+
+    sw $t3, sum
+
+    li $v0, 10
+    syscall
