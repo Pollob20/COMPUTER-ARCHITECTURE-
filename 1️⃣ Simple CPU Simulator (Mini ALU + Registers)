@@ -1,0 +1,28 @@
+#include <stdio.h>
+#include <stdint.h>
+
+#define REG_COUNT 4
+
+uint32_t REG[REG_COUNT];
+
+void execute(char opcode, int r1, int r2) {
+    switch(opcode) {
+        case '+': REG[r1] = REG[r1] + REG[r2]; break;
+        case '-': REG[r1] = REG[r1] - REG[r2]; break;
+        case '&': REG[r1] = REG[r1] & REG[r2]; break;
+        case '|': REG[r1] = REG[r1] | REG[r2]; break;
+    }
+}
+
+int main() {
+    REG[0] = 10;
+    REG[1] = 5;
+
+    execute('+', 0, 1);
+    printf("R0: %u\n", REG[0]);
+
+    execute('&', 0, 1);
+    printf("R0: %u\n", REG[0]);
+
+    return 0;
+}
