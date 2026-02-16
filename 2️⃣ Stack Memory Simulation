@@ -1,0 +1,24 @@
+#include <stdio.h>
+
+#define STACK_SIZE 10
+
+int stack[STACK_SIZE];
+int top = -1;
+
+void push(int value) {
+    if(top < STACK_SIZE-1)
+        stack[++top] = value;
+}
+
+int pop() {
+    if(top >= 0)
+        return stack[top--];
+    return -1;
+}
+
+int main() {
+    push(10);
+    push(20);
+    printf("Pop: %d\n", pop());
+    printf("Pop: %d\n", pop());
+}
