@@ -1,0 +1,96 @@
+.data
+array:      .word 9, 4, 7, 3, 10, 5, 1, 8
+size:       .word 8
+newline:    .asciiz "\n"
+
+.text
+.globl main
+
+main:
+    la $a0, array
+    li $a1, 0
+    lw $t0, size
+    addi $a2, $t0, -1
+
+    jal quicksort_opt
+
+    la $a0, array
+    lw $a1, size
+    jal print_array
+
+    li $v0, 10
+    syscall
+
+
+quicksort_opt:
+
+qs_loop:
+    bge $a1, $a2, qs_return
+
+    # random pivot index
+    sub $t0, $a2, $a1
+    addi $t0, $t0, 1
+
+    li $v0, 42
+    move $a0, $t0
+    syscall
+    add $t1, $a1, $a0   
+
+    # swap pivot with high
+    sll $t2, $t1, 2
+    add $t2, $t2, $a0
+    sll $t3, $a2, 2
+    add $t3, $t3, $a0
+
+    lw $t4, 0($t2)
+    lw $t5, 0($t3)
+    sw $t4, 0($t3)
+    sw $t5, 0($t2)
+
+    # partition
+    move $a0, $a0
+    jal partition
+
+    move $t6, $v0   
+
+    # left size
+    sub $t7, $t6, $a1
+    # right size
+    sub $t8, $a2, $t6
+
+    blt $t7, $t8, recurse_left
+
+recurse_right:
+    addi $t9, $t6, 1
+    addi $sp, $sp, -8
+    sw $a1, 4($sp)
+    sw $a2, 0($sp)
+
+    move $a1, $t9
+    jal quicksort_opt
+
+    lw $a1, 4($sp)
+    lw $a2, 0($sp)
+    addi $sp, $sp, 8
+
+    addi $a2, $t6, -1
+    j qs_loop
+
+recurse_left:
+    addi $t9, $t6, -1
+    addi $sp, $sp, -8
+    sw $a1, 4($sp)
+    sw $a2, 0($sp)
+
+    move $a2, $t9
+    jal quicksort_opt
+
+    lw $a1, 4($sp)
+    lw $a2, 0($sp)
+    addi $sp, $sp, 8
+
+    addi $a1, $t6, 1
+    j qs_loop
+
+qs_return:
+    jr $ra
