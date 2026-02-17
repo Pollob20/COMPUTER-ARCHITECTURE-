@@ -1,0 +1,158 @@
+What This Code Has
+
+✔ Recursive QuickSort
+✔ Proper stack frame save/restore
+✔ Partition function
+✔ Element swap
+✔ Index calculation (word addressing)
+✔ Print routine
+
+.data
+array:      .word 9, 4, 7, 3, 10, 5, 1, 8
+size:       .word 8
+newline:    .asciiz "\n"
+
+.text
+.globl main
+
+main:
+    la $a0, array      
+    li $a1, 0          
+    lw $t0, size
+    addi $a2, $t0, -1  
+
+    jal quicksort
+
+    la $a0, array
+    lw $a1, size
+    jal print_array
+
+    li $v0, 10
+    syscall
+
+quicksort:
+    addi $sp, $sp, -20
+    sw $ra, 16($sp)
+    sw $s0, 12($sp)
+    sw $s1, 8($sp)
+    sw $s2, 4($sp)
+    sw $s3, 0($sp)
+
+    move $s0, $a0      
+    move $s1, $a1      
+    move $s2, $a2      
+
+    bge $s1, $s2, qs_end
+
+    move $a0, $s0
+    move $a1, $s1
+    move $a2, $s2
+    jal partition
+
+    move $s3, $v0      
+
+    # left recursion
+    move $a0, $s0
+    move $a1, $s1
+    addi $a2, $s3, -1
+    jal quicksort
+
+    # right recursion
+    move $a0, $s0
+    addi $a1, $s3, 1
+    move $a2, $s2
+    jal quicksort
+
+qs_end:
+    lw $ra, 16($sp)
+    lw $s0, 12($sp)
+    lw $s1, 8($sp)
+    lw $s2, 4($sp)
+    lw $s3, 0($sp)
+    addi $sp, $sp, 20
+    jr $ra
+
+
+partition:
+    addi $sp, $sp, -16
+    sw $ra, 12($sp)
+    sw $s0, 8($sp)
+    sw $s1, 4($sp)
+    sw $s2, 0($sp)
+
+    move $s0, $a0      
+    move $s1, $a1      
+    move $s2, $a2      
+
+    # pivot = arr[high]
+    sll $t0, $s2, 2
+    add $t0, $t0, $s0
+    lw $t1, 0($t0)     
+
+    addi $t2, $s1, -1  
+
+    move $t3, $s1      
+
+part_loop:
+    bge $t3, $s2, part_done
+
+    sll $t4, $t3, 2
+    add $t4, $t4, $s0
+    lw $t5, 0($t4)     
+
+    ble $t5, $t1, do_swap
+    j skip_swap
+
+do_swap:
+    addi $t2, $t2, 1
+
+    sll $t6, $t2, 2
+    add $t6, $t6, $s0
+    lw $t7, 0($t6)
+
+    sw $t5, 0($t6)
+    sw $t7, 0($t4)
+
+skip_swap:
+    addi $t3, $t3, 1
+    j part_loop
+
+part_done:
+    addi $t2, $t2, 1
+
+    sll $t6, $t2, 2
+    add $t6, $t6, $s0
+    lw $t7, 0($t6)
+
+    sw $t1, 0($t6)
+    sw $t7, 0($t0)
+
+    move $v0, $t2
+
+    lw $ra, 12($sp)
+    lw $s0, 8($sp)
+    lw $s1, 4($sp)
+    lw $s2, 0($sp)
+    addi $sp, $sp, 16
+    jr $ra
+
+
+print_array:
+    move $t0, $zero
+print_loop:
+    bge $t0, $a1, print_done
+    sll $t1, $t0, 2
+    add $t2, $a0, $t1
+    lw $a0, 0($t2)
+    li $v0, 1
+    syscall
+
+    la $a0, newline
+    li $v0, 4
+    syscall
+
+    addi $t0, $t0, 1
+    j print_loop
+
+print_done:
+    jr $ra
